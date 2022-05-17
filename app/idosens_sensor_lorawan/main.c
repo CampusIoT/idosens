@@ -1,11 +1,13 @@
+/*
+ * (c) 2022, Université Grenoble Alpes, LIG, FabMSTIC
+*/
 
 /**
- * @ingroup     examples
+ * @ingroup     apps
  * @{
  *
  * @file
  * @brief       Idosens sensor application
- *
  * @}
  */
 
@@ -14,7 +16,6 @@
 #include "clk.h"
 #include "timex.h"
 #include "ztimer.h"
-#include "xtimer.h"
 #include "at30tse75x.h"
 #include <stdio.h>
 #include <string.h>
@@ -24,6 +25,7 @@
 #include "msg.h"
 #include "thread.h"
 #include "fmt.h"
+#include "cayenne_lpp.h"
 
 #include "net/loramac.h"
 #include "semtech_loramac.h"
@@ -32,7 +34,15 @@
 #include "sx127x_netdev.h"
 #include "sx127x_params.h"
 
-#define PERIOD_S            (60U)
+
+#ifndef TXPERIOD
+#define TXPERIOD                       (60U)
+#endif
+
+#ifndef JOIN_RETRY_PERIOD
+#define JOIN_RETRY_PERIOD            (60U)
+#endif
+
 
 #define SENDER_PRIO         (THREAD_PRIORITY_MAIN - 1)
 static kernel_pid_t sender_pid;
@@ -50,7 +60,7 @@ static uint8_t deveui[LORAMAC_DEVEUI_LEN];
 static uint8_t appeui[LORAMAC_APPEUI_LEN];
 static uint8_t appkey[LORAMAC_APPKEY_LEN];
 
-
+static cayenne_lpp_t lpp;
 
 static void _alarm_cb(void *arg)
 {
@@ -62,23 +72,36 @@ static void _alarm_cb(void *arg)
 static void _prepare_next_alarm(void)
 {
     timer.callback = _alarm_cb;
-    ztimer_set(ZTIMER_MSEC, &timer, PERIOD_S * MS_PER_SEC);
+    ztimer_set(ZTIMER_MSEC, &timer, TXPERIOD * MS_PER_SEC);
 }
 
 static void _send_message(void)
 {
+
+    // TODO exit at30tse75x from deepsleep
     float temp = 0.0f;
-    puts("envoi du message sur LORA");
+
     if (at30tse75x_get_temperature(&temp_driver, &temp) == 0){
+        printf("Temperature: %f\n", temp);
+        cayenne_lpp_reset(&lpp);
+        cayenne_lpp_add_temperature(&lpp, 3, temp);
         /* Try to send the message */
         uint8_t ret = semtech_loramac_send(&loramac,
-                                            (uint8_t *) &temp, sizeof(temp));
+                                            (uint8_t *) &lpp.buffer, sizeof(lpp.cursor));
         if (ret != SEMTECH_LORAMAC_TX_DONE)  {
-            printf("Cannot send message");
-            return;
+            puts("Fail to send message");
+        } else {
+            puts("Message sent");
         }
+    } else {
+        puts("Fail to read temperature");
     }
     
+    // TODO add other sensors measurement to lpp
+
+    // TODO set at30tse75x inot deepsleep mode
+
+    return;
 }
 
 static void *sender(void *arg)
@@ -109,7 +132,7 @@ int main(void)
     puts("Starting temperature driver");
     while (at30tse75x_init(&temp_driver, PORT_A, AT30TSE75X_TEMP_ADDR) != 0) {
         puts("error temperature driver sensor");
-        xtimer_msleep(1000);
+        ztimer_sleep(ZTIMER_USEC, 1 * US_PER_SEC);
     };
     puts("Starting init temperature driver succeeded");
 
@@ -129,6 +152,8 @@ int main(void)
     semtech_loramac_set_appeui(&loramac, appeui);
     semtech_loramac_set_appkey(&loramac, appkey);
 
+    // TODO printf deveui appeui appkey
+
     /* Use a fast datarate, e.g. BW125/SF7 in EU868 */
     semtech_loramac_set_dr(&loramac, LORAMAC_DR_5 );
 
@@ -139,9 +164,15 @@ int main(void)
     puts("Starting join procedure");
     while (semtech_loramac_join(&loramac, LORAMAC_JOIN_OTAA) != SEMTECH_LORAMAC_JOIN_SUCCEEDED) {
         puts("Join procedure failed");
-        ztimer_sleep(ZTIMER_USEC, 20 * US_PER_SEC);
+        ztimer_sleep(ZTIMER_USEC, JOIN_RETRY_PERIOD * US_PER_SEC);
+
+        // TODO decrement DR before retrying
+        // semtech_loramac_set_dr(&loramac, LORAMAC_DR_5 );
     }
     puts("Join procedure succeeded");
+
+    // TODO Set ADR
+    // TODO Set Confirmed/Unconfirmed
 
         /* start the sender thread */
     sender_pid = thread_create(sender_stack, sizeof(sender_stack),
@@ -151,5 +182,4 @@ int main(void)
     msg_t msg;
     msg_send(&msg, sender_pid);
     return 0;
-    
 }
