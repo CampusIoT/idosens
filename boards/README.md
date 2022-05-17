@@ -1,5 +1,7 @@
 # Idosens :: Boards
 
+![Idosens](./idosens.jpg)
+
 ## Base
 
 * ST Microelectronics STM32F103VCT6
