@@ -17,9 +17,9 @@ EXTERNAL_BOARD_DIRS=../../boards make DEVEUI=1234567890ABCDEF APPEUI=00000000000
 
 * [x] Move to LPP Cayenne for the frame payload
 * [ ] Control GPIO for load switch
-* [ ] Read light from TSL25711
-* [ ] Read magneto+accelero from LSM303DTR
-* [ ] Decrement DR before retrying
+* [ ] Read light from [TSL25711](https://github.com/adafruit/TSL2561-Arduino-Library)
+* [ ] Read magneto+accelero from [LSM303DTR](https://www.st.com/en/mems-and-sensors/lsm303d.html)
+* [ ] [Decrement DR before retrying](https://github.com/CampusIoT/orbimote/blob/2174ea10d13ad1386c777ec321da30fe0909b44f/field_test_device/loramac_utils.c#L97)
 * [ ] Set ADR false/true
 * [ ] Set Confirmed/Unconfirmed
 * [ ] Process downlink https://github.com/RIOT-OS/RIOT/blob/73ccd1e2e721bee38f958f8906ac32e5e1fceb0c/tests/pkg_semtech-loramac/main.c#L37
