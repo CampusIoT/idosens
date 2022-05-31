@@ -7,6 +7,7 @@
  */
 #include "epd_board.h"
 #include "xtimer.h"
+
 uint32_t lasttime=0;
 
 void start_EPD_timer(void){

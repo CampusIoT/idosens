@@ -2,10 +2,23 @@
 # (c) 2021-2022, Université Grenoble Alpes, LIG, FabMSTIC
 #
 
+# Comment this out to disable code in RIOT that does safety checking
+# which is not needed in a production environment but helps in the
+# development process:
+DEVELHELP ?= 1
+
+# Change this to 0 show compiler invocation lines by default:
+QUIET ?= 0
+
+
 # name of the application
 APPLICATION = idosens_base_lorawan
 
 EXTERNAL_BOARD_DIRS ?= ../../boards
+
+INCLUDES += -I$(CURDIR)/include
+INCLUDES += -I$(CURDIR)/bitmap
+
 
 # If no BOARD is found in the environment, use this default:
 BOARD ?= idosens_base
@@ -19,16 +32,20 @@ BOARD ?= idosens_base
 USEMODULE += xtimer
 USEMODULE += crypto_aes_128
 
-
 USEMODULE += sx1276
 LORA_REGION ?= EU868
 
 USEPKG += semtech-loramac
 USEPKG += cayenne-lpp
 
+USEMODULE += epd_driver
+EXTERNAL_MODULE_DIRS += ../../modules/epd_driver
+#EXTERNAL_MODULE_DIRS += /Users/donsez/github/campusiot/idosens/modules/epd_driver
+
 USEMODULE += $(DRIVER)
 USEMODULE += fmt
 USEMODULE += printf_float
+
 
 # required features
 #FEATURES_REQUIRED +=  periph_adc
@@ -48,16 +65,5 @@ TXPERIOD ?= (300U)
 DOCKER_ENV_VARS += DEVEUI
 DOCKER_ENV_VARS += APPEUI
 DOCKER_ENV_VARS += APPKEY
-
-INCLUDES += -I$(CURDIR)/include
-INCLUDES += -I$(CURDIR)/bitmap
-
-# Comment this out to disable code in RIOT that does safety checking
-# which is not needed in a production environment but helps in the
-# development process:
-DEVELHELP ?= 1
-
-# Change this to 0 show compiler invocation lines by default:
-QUIET ?= 1
 
 include $(RIOTBASE)/Makefile.include
