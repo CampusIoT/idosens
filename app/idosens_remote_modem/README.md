@@ -1,4 +1,4 @@
-# IsoSens Remote :: LoRaWAN Modem
+# Idosens Remote :: LoRaWAN Modem
 
 ## Build
 
