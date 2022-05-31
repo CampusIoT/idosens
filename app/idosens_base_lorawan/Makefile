@@ -1,3 +1,7 @@
+#
+# (c) 2021-2022, Université Grenoble Alpes, LIG, FabMSTIC
+#
+
 # name of the application
 APPLICATION = idosens_base_lorawan
 
@@ -7,7 +11,7 @@ EXTERNAL_BOARD_DIRS ?= ../../boards
 BOARD ?= idosens_base
 
 # This has to be the absolute path to the RIOT base directory:
-RIOTBASE ?= $(CURDIR)/../../RIOT/
+# RIOTBASE ?= $(CURDIR)/../../RIOT/
 
 # required modules
 #USEMODULE +=  shell
@@ -46,6 +50,7 @@ DOCKER_ENV_VARS += APPEUI
 DOCKER_ENV_VARS += APPKEY
 
 INCLUDES += -I$(CURDIR)/include
+INCLUDES += -I$(CURDIR)/bitmap
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
