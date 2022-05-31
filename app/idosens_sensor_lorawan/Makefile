@@ -5,7 +5,7 @@
 # name of your application
 APPLICATION = idosens-app
 
-# If no BOARD is found in the environment, use this default:
+EXTERNAL_BOARD_DIRS ?= ../../boards
 BOARD ?= idosens_sensor 
 
 DRIVER ?= sx1276
