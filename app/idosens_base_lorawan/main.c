@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 LIG
+ * Copyright (C) 2021-2022 LIG
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -42,12 +42,7 @@
 
 ///////Include  Epaper
 #include "epd_board.h"
-#include "COG_FPL.h"
-#include "BufferDraw.h"
-#include "Arial24x23.h"
-#include "font_big.h"
-#include "horaires.h"
-#include "fermeture.h"
+#include "epd.h"
 
 //include common info between transmitter and receiver
 #include "ido_common.h"
@@ -68,27 +63,12 @@ static uint8_t message_enc[AES_BLOCK_SIZE];
 static sx127x_t sx127x;
 
 //Two image buffer for EPD
-#define IMAGE_W (264)
-#define IMAGE_H (176)
-#define IMAGE_LEN (IMAGE_W*IMAGE_H/8)
-static uint8_t image[IMAGE_LEN];
-static uint8_t old_image[IMAGE_LEN];
 
 cipher_context_t cipher;
 ido_msg_t msg={0};
 uint32_t opentime=0;
 
-
-int state=0;
-
-//simple memcopy function
-void memcopy(const uint8_t * buffsource, uint8_t * buffdest, uint16_t len)
-{
-    for(uint16_t i =0; i<len; i++)
-    {
-        buffdest[i]=buffsource[i];
-    }
-}
+static int state=0;
 
 //Print formated time
 static int _print_time(struct tm *time)
@@ -147,23 +127,6 @@ static void set_time(uint32_t time)
     _print_time(&ot);
 }
 
-//Draw default picture on EPD
-static void set_default(void)
-{
-    puts("Default");
-    EPD_power_on(EPD_270, 18);
-    puts("drive on");
-    EPD_initialize_driver ();
-    puts("drive init");
-    memcopy(horaires,image,IMAGE_LEN);
-    EPD_display_from_array_prt ( old_image, image );
-    puts("disp");
-    memcopy(horaires,old_image,IMAGE_LEN);
-    EPD_power_off();
-    spi_release(EPD_PARAM_SPI);
-    puts("drive off");
-
-}
 //Set rtc alarm to close time
 static int set_close(uint32_t close_time, uint32_t time)
 {
@@ -176,43 +139,26 @@ static int set_close(uint32_t close_time, uint32_t time)
     rtc_set_alarm(&ct,&cb_alarm,(void *)MSG_TYPE_ALARM_CLOSE);
     return 0;
 }
+static int set_default(void)
+{
+    epd_draw_default();
+    return 0;
+}
+
+
 //Draw closed picture with reopen time
 //Set rtc alarm to reopen time
 static int set_open(uint32_t time)
 {
     puts("open time");
     struct tm ot;
-    char buffer[20];
     rtc_localtime(time,&ot);
     _print_time(&ot);
     //Set rtc alarm
     rtc_set_alarm(&ot,&cb_alarm,(void *)MSG_TYPE_ALARM_OPEN);
 
-    //build image to draw
-    BD_clear();
-    BD_clip_image(fermeture,0,0,264,100);
-    BD_locate(40,100);
-    sprintf(buffer,"%02i-%02i-%04i",
-             ot.tm_mday, ot.tm_mon + 1, ot.tm_year + 1900
-           );
-    puts(buffer);
-    BD_puts(buffer);
-    BD_locate(90,136);
-    sprintf(buffer,"%02i:%02i",
-            ot.tm_hour, ot.tm_min
-          );
-    BD_puts(buffer);
-    
-    //Draw image on EPD
-    EPD_power_on(EPD_270, 18);
-    EPD_initialize_driver ();
-    EPD_display_from_array_prt ( old_image, image );
-    memcopy(image,old_image,IMAGE_LEN);
-    EPD_power_off();
-    //EDP power use spi_aquire but you must use spi_release manualy
-    spi_release(EPD_PARAM_SPI);
-    puts("draw_fermeture end");
-    
+    epd_draw_closed(&ot);
+
     return 0;
 }
 
@@ -309,14 +255,10 @@ int main(void)
 	gpio_init(GPIO_PIN(PORT_C, 1), GPIO_OUT);
 	gpio_clear(GPIO_PIN(PORT_C, 1));
     
-    //Init buffer image
-    BD_init( image, IMAGE_LEN, IMAGE_W, IMAGE_H, 0, 1);
-    BD_clear();
-    BD_set_font(Courier_New19x36, Courier_New19x36_conf);
-    //Init EPD
-    spi_init(EPD_PARAM_SPI);
-    EPD_display_hardware_init();
+    epd_init();
+
     set_default();
+
     //Init RTC
     rtc_poweron();
 
