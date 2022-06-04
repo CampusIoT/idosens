@@ -19,4 +19,4 @@ https://javl.github.io/image2cpp/
 
 * [ ] Class C
 * [ ] Class B
-* [ ] Move e-Paper Display (EPD) driver into ../../modules/epd_driver
+* [x] Move e-Paper Display (EPD) driver into ../../modules/epd_driver
