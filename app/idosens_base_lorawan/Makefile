@@ -8,7 +8,7 @@
 DEVELHELP ?= 1
 
 # Change this to 0 show compiler invocation lines by default:
-QUIET ?= 0
+QUIET ?= 1 
 
 
 # name of the application
@@ -16,12 +16,11 @@ APPLICATION = idosens_base_lorawan
 
 EXTERNAL_BOARD_DIRS ?= ../../boards
 
-INCLUDES += -I$(CURDIR)/include
-INCLUDES += -I$(CURDIR)/bitmap
-
-
 # If no BOARD is found in the environment, use this default:
 BOARD ?= idosens_base
+
+INCLUDES += -I$(CURDIR)/include
+INCLUDES += -I$(CURDIR)/bitmap
 
 # This has to be the absolute path to the RIOT base directory:
 # RIOTBASE ?= $(CURDIR)/../../RIOT/
@@ -39,8 +38,7 @@ USEPKG += semtech-loramac
 USEPKG += cayenne-lpp
 
 USEMODULE += epd_driver
-EXTERNAL_MODULE_DIRS += ../../modules/epd_driver
-#EXTERNAL_MODULE_DIRS += /Users/donsez/github/campusiot/idosens/modules/epd_driver
+EXTERNAL_MODULE_DIRS += ../../modules/
 
 USEMODULE += $(DRIVER)
 USEMODULE += fmt
