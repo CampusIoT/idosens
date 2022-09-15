@@ -21,6 +21,8 @@ BOARD ?= idosens_base
 
 INCLUDES += -I$(CURDIR)/include
 INCLUDES += -I$(CURDIR)/bitmap
+INCLUDES += -I$(CURDIR)/fonts
+
 
 # This has to be the absolute path to the RIOT base directory:
 # RIOTBASE ?= $(CURDIR)/../../RIOT/
