@@ -24,7 +24,7 @@
 #include "COG_FPL.h"
 #include "BufferDraw.h"
 #include "Arial24x23.h"
-#include "font_big.h"
+#include "Neu42x35.h"
 #include "default_icon.h"
 #include "door_closed_icon.h"
 #include "liglab_icon.h"
