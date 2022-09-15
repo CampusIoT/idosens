@@ -15,5 +15,5 @@ EXTERNAL_BOARD_DIRS=~/github/campusiot/idosens/boards make BOARD=idosens_sensor
 ## Requirements
 * STLink v2 programmer
 * FTDI (USB Serial adapter)
-* [Tag-Connect](https://www.tag-connect.com/) 10-pin probe
+* [Tag-Connect 10-pin no-legs probe](https://www.tag-connect.com/product/tc2050-idc-nl-10-pin-no-legs-cable-with-ribbon-connector).
 * Optional : [PCB for connecting the Tag-Connect probe to the STLink v2 programmer and the USB Serial adapter](./tagconnect_adapter)
