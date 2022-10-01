@@ -15,6 +15,9 @@ The base URL, the seed, the secret key, the period of change can be configured a
 
 The RTC of the MCU is synchronized using the App Clock Sync specification.
 
+If a GNSS module is connected to the board (UART,I2C) and if the URL is prefied by `geo:`, the QRCode includes the lattitude and the longitude. 
+(for instance, [geo:45.1941477,5.7656245?q=FabMSTIC](geo:45.1941477,5.7656245?q=FabMSTIC))
+
 ## References
 * https://github.com/RIOT-OS/RIOT/tree/master/tests/pkg_qr-code-generator
 * https://github.com/nayuki/QR-Code-generator
