@@ -1,6 +1,6 @@
 # Idosens :: Boards
 
-![Idosens](./idosens.jpg)
+![Idosens](./idosens-annotated.jpg)
 
 ## Base
 
