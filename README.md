@@ -2,7 +2,7 @@
 
 [Idosens](https://www.idosens.com/) is a retired product donated to FabMSTIC for research and teaching purposes. The product contains three LoRa endpoints : Base, Sensor and Remote command.
 
-![Idosens](boards/idosensi-annotated.jpg)
+![Idosens](boards/idosens-annotated.jpg)
 
 ## Getting started
 
