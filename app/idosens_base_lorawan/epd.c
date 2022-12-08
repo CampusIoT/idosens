@@ -56,7 +56,8 @@ void epd_init(void)
     //Init buffer image
     BD_init( image, IMAGE_LEN, IMAGE_W, IMAGE_H, 0, 1);
     BD_clear();
-    BD_set_font(Courier_New19x36, Courier_New19x36_conf);
+    //BD_set_font(Courier_New19x36, Courier_New19x36_conf);
+    BD_set_font(Arial24x23, NULL);
     //Init EPD
     spi_init(EPD_PARAM_SPI);
     EPD_display_hardware_init();
