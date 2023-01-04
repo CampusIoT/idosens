@@ -28,6 +28,7 @@
 #include "default_icon.h"
 #include "door_closed_icon.h"
 #include "liglab_icon.h"
+#include "qrcode_campusiot.h"
 
 #include "epd.h"
 
@@ -73,7 +74,8 @@ void epd_draw_default(void)
     puts("drive on");
     EPD_initialize_driver ();
     puts("drive init");
-    memcopy(default_icon,image,IMAGE_LEN);
+//    memcopy(default_icon,image,IMAGE_LEN);
+    memcopy(epd_bitmap_qrcode,image,IMAGE_LEN);
     EPD_display_from_array_prt ( old_image, image );
     puts("disp");
     memcopy(default_icon,old_image,IMAGE_LEN);
