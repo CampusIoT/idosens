@@ -38,37 +38,40 @@ If a GNSS module is connected to the board (UART,I2C) and if the URL is prefied 
 #include "hashes/aes128_cmac.h"
 #include "crypto/ciphers.h"
 
-// AES128_CMAC_KEY can be set using downlink
 
+// URL_PREFIX can be set using downlink
+char* URL_PREFIX="https://presence.com"
+
+// AES128_CMAC_KEY and AES128_CMAC_KEY_VERSION can be set using downlink
 uint16_t AES128_CMAC_KEY_VERSION=1;
-
 const uint8_t AES128_CMAC_KEY[16] = {
     0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
     0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
 };
 
-const char* URL_PROTO3="https://presence.com/%8x/%8x/%4x";
-const char* URL_PROTO4="https://presence.com/%8x/%8x/%4x/%8x";
+const char* URL_PROTO3="%s/%8x/%8x/%4x";
+const char* URL_PROTO4="%s/%8x/%8x/%4x/%8x";
 
-char MESSAGE_TO_ENCODE[1024];
-sprintf(MESSAGE_TO_ENCODE, URL_PROTO3, BASE_ID, epoch_in_second, AES128_CMAC_KEY_VERSION);
-size_t len = strlen(MESSAGE_TO_ENCODE);
+// URL max size is 1024
+char URL_TO_ENCODE[1024];
+sprintf(URL_TO_ENCODE, URL_PROTO3, BASE_ID, epoch_in_second, AES128_CMAC_KEY_VERSION);
+size_t len = strlen(URL_TO_ENCODE);
 
 // get the secure digest
 uint8_t digest[16];
 aes128_cmac_context_t ctx;
 aes128_cmac_init(&ctx, AES128_CMAC_KEY, 16);
-aes128_cmac_update(&ctx, MESSAGE_TO_ENCODE, len);
+aes128_cmac_update(&ctx, URL_TO_ENCODE, len);
 aes128_cmac_final(&ctx, digest);
 
 // add the 4 first bytes of the secure digest
-sprintf(MESSAGE_TO_ENCODE, URL_PROTO4, BASE_ID, epoch_in_second, AES128_CMAC_KEY_VERSION, *((uint32_t*)digest));
+sprintf(URL_TO_ENCODE, URL_PROTO4, BASE_ID, epoch_in_second, AES128_CMAC_KEY_VERSION, *((uint32_t*)digest));
 
 // generate the qrcode for the buffer 
 uint8_t qr0[qrcodegen_BUFFER_LEN_FOR_VERSION(2)];
 uint8_t buffer[qrcodegen_BUFFER_LEN_FOR_VERSION(2)];
 
-if (!qrcodegen_encodeText(MESSAGE_TO_ENCODE,
+if (!qrcodegen_encodeText(URL_TO_ENCODE,
                               buffer, qr0, qrcodegen_Ecc_MEDIUM,
                               qrcodegen_VERSION_MIN, qrcodegen_VERSION_MAX,
                               qrcodegen_Mask_AUTO, true)) {
