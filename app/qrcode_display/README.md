@@ -83,3 +83,8 @@ int size = qrcodegen_getSize(qr0);
 
 ...
 ```
+
+## Check URL CMAC
+```bash
+echo https://presence.com/12345678/abcdef01/0001 | openssl dgst -mac cmac -macopt cipher:aes-128-cbc -macopt hexkey:11223344556677889900112233445566 -sha1
+```
