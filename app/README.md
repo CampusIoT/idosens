@@ -16,3 +16,12 @@
 
 * [ ] Idosens remote : LoRaWAN class-A endpoint with panic buttons (ON/OFF)
 * [ ] Idosens remote : LoRaWAN class-ABC UART modem
+
+## Console
+
+Open the serial console of the board (TagConnect UART pins to USB serial adapter)
+```bash
+brew install tio
+tio -L
+tio -b 115200 -m INLCRNL /dev/tty.usbserial-142xxx
+```
